@@ -38,12 +38,16 @@ def get_snu_menu(target_date=None):
                 if any(x in cafeteria_name for x in cafeteria_list):
                     raw_lunch = row.select_one("td:nth-child(3)").get_text("\n", strip=True)
                     if raw_lunch and "등록된" not in raw_lunch:
-                        # 301동은 <TAKE-OUT> 기준으로 자르기
-                        lunch_text = raw_lunch.split("<TAKE-OUT>")[0].strip() if "301" in cafeteria_name else raw_lunch.strip()
-                        # 두레미담은 <주문식 메뉴> 기준으로 자르기
-                        lunch_text = raw_lunch.split("<주문식 메뉴>")[0].strip() if "두레미담" in cafeteria_name else raw_lunch.strip()
-                        # 3식당은 <든든한끼샐러드코너> 기준으로 자르기
-                        lunch_text = raw_lunch.split("<든든한끼샐러드코너>")[0].strip() if "3식당" in cafeteria_name else raw_lunch.strip()
+                        # 메뉴 자르기(301: <TAKE-OUT>, 두레미담: <주문식 메뉴>, 3식당: <든든한끼샐러드코너>)
+                        if "301" in cafeteria_name:
+                            lunch_text = raw_lunch.split("<TAKE-OUT>")[0].strip()
+                        elif "두레미담" in cafeteria_name:
+                            lunch_text = raw_lunch.split("<주문식 메뉴>")[0].strip()
+                        elif "3식당" in cafeteria_name:
+                            lunch_text = raw_lunch.split("<든든한끼샐러드코너>")[0].strip()
+                        else:
+                            lunch_text = raw_lunch.strip()
+                            
                         lunch_results.append(f"📍 {cafeteria_name}\n{lunch_text}\n")
 
                 # 2. 저녁 데이터 처리 (302동 전용)
